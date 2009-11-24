@@ -1,7 +1,13 @@
 package Spreadsheet::ParseExcel_XLHTML;
 
-$VERSION = 0.02;
-@ISA = qw(Spreadsheet::ParseExcel);
+use strict;
+use warnings;
+use IO::File;
+use Spreadsheet::ParseExcel;
+use HTML::Entities;
+
+our $VERSION = 0.03;
+our @ISA     = 'Spreadsheet::ParseExcel';
 
 =head1 NAME
 
@@ -47,7 +53,9 @@ benchmarks then the original Spreadsheet::ParseExcel at the time of writing.
 To achieve this, it uses a program called "xlhtml" by Stev Grubb. You can find
 it here:
 
-	http://www.xlhtml.org/
+L<http://chicago.sourceforge.net/xlhtml/>
+
+It is also in Debian as the C<xlhtml> package.
 
 Get the latest developer release. Once compiled, it needs to be in the PATH of
 your Perl program for this module to work correctly.
@@ -70,8 +78,8 @@ Spreadsheet::ParseExcel::Cell objects with empty or whitespace-filled Value
 fields, while this module will only create Cell objects if a value exists;
 otherwise the Cells array will contain an C<undef> for that cell.
 
-In other words, don't blindly call C<$sheet->{Cells}[i,j]->Value>, check if the
-cell is defined first.
+In other words, don't blindly call C<< $sheet->{Cells}[$i][$j]->Value >>, check
+if the cell is defined first.
 
 =head1 OPTIONS
 
@@ -82,11 +90,6 @@ Spreadsheet::ParseExcel module, and/or minimize changes to your code for
 compatibility.
 
 =cut
-
-use strict;
-use IO::File;
-use Spreadsheet::ParseExcel;
-use HTML::Entities;
 
 sub import {
 	my $pkg    = shift;
@@ -104,12 +107,12 @@ sub import {
 
 # Trick Spreadsheet::ParseExcel into calling our constructor and blessing the
 # object into this package, also overwriteh the Parse method. Evil, I know :)
-		*{Spreadsheet::ParseExcel::new}   = sub ($;%) {
+		*{'Spreadsheet::ParseExcel::new'}   = sub ($;%) {
 			shift;
 			new (__PACKAGE__, @_);
 		};
 
-		*{Spreadsheet::ParseExcel::Parse} = \&Parse;
+		*{'Spreadsheet::ParseExcel::Parse'} = \&Parse;
 	}
 }
 
@@ -220,17 +223,17 @@ sub _getFileByObject {
 	return $file;
 }
 
-q|The road goes ever on and on...|;
+1;
 
 __END__
 
 =head1 AUTHOR
 
-Rafael Kitover (caelum@debian.org)
+Rafael Kitover <rkitover@cpan.org>
 
-=head1 COPYRIGHT
+=head1 COPYRIGHT & LICENSE
 
-This program is Copyright (c) 2001,2002 by Rafael Kitover. This program is free
+This program is Copyright (c) 2001-2009 by Rafael Kitover. This program is free
 software; you can redistribute it and/or modify it under the same terms as Perl
 itself.
 
