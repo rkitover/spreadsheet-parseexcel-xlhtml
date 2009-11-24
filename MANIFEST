@@ -1,0 +1,6 @@
+README
+Changes
+Makefile.PL
+lib/Spreadsheet/ParseExcel_XLHTML.pm
+MANIFEST
+test.pl
