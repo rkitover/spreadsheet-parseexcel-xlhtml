@@ -7,7 +7,7 @@ WriteMakefile(
 	VERSION_FROM	=> 'lib/Spreadsheet/ParseExcel_XLHTML.pm',
 	ABSTRACT_FROM	=> 'lib/Spreadsheet/ParseExcel_XLHTML.pm',
 	PREREQ_PM	=> {
-		Spreadsheet::ParseExcel	=> 0,
+		'Spreadsheet::ParseExcel' => 0,
 	},
 	DISTNAME	=> 'Spreadsheet-ParseExcel_XLHTML',
 	dist		=> {
