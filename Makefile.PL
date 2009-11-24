@@ -1,24 +1,20 @@
-use strict;
-use warnings;
-use ExtUtils::MakeMaker;
+use inc::Module::Install 0.91;
 
-WriteMakefile(
-	NAME		=> 'Spreadsheet::ParseExcel',
-	VERSION_FROM	=> 'lib/Spreadsheet/ParseExcel_XLHTML.pm',
-	ABSTRACT_FROM	=> 'lib/Spreadsheet/ParseExcel_XLHTML.pm',
-	PREREQ_PM	=> {
-		'Spreadsheet::ParseExcel' => 0,
-	},
-	DISTNAME	=> 'Spreadsheet-ParseExcel_XLHTML',
-	dist		=> {
-		COMPRESS => 'gzip -9f',
-		SUFFIX   => 'gz',
-		PREOP	 => makeReadme(),
-	}
-);
+name     'Spreadsheet-ParseExcel_XLHTML';
+all_from 'lib/Spreadsheet/ParseExcel_XLHTML.pm';
 
-sub makeReadme {
-    return <<EOF;
-pod2text -72 < ./blib/lib/Spreadsheet/ParseExcel_XLHTML.pm > ./README ;	\\
-EOF
+requires 'Spreadsheet::ParseExcel';
+
+auto_provides;
+auto_install;
+
+resources repository =>
+    'git://github.com/rkitover/spreadsheet-parseexcel-xlhtml.git';
+
+if ($Module::Install::AUTHOR) {
+    system('pod2text lib/Spreadsheet/ParseExcel_XLHTML.pm > README');
 }
+
+realclean_files 'README';
+
+WriteAll;
