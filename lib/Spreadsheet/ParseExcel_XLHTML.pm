@@ -6,7 +6,7 @@ use IO::File;
 use Spreadsheet::ParseExcel;
 use HTML::Entities;
 
-our $VERSION = 0.03;
+our $VERSION = 0.04;
 our @ISA     = 'Spreadsheet::ParseExcel';
 
 =head1 NAME
@@ -15,32 +15,31 @@ Spreadsheet::ParseExcel_XLHTML - Parse Excel Spreadsheets using xlhtml
 
 =head1 SYNOPSIS
 
-	use Spreadsheet::ParseExcel_XLHTML;
+    use Spreadsheet::ParseExcel_XLHTML;
 
-	my $excel = new Spreadsheet::ParseExcel_XLHTML;
+    my $excel = Spreadsheet::ParseExcel_XLHTML->new;
 
-	my $book = $excel->Parse('/some/excel/file.xls');
+    my $book = $excel->Parse('/some/excel/file.xls');
 
-	# Cheesy CSV printer...
-	for my $sheet (@{$book->{Worksheet}}) {
-		print STDERR "Worksheet: ", $sheet->{Name}, "\n";
-		for my $i ($sheet->{MinRow}..$sheet->{MaxRow}) {
-			print join ',', map { qq|"$_"| }
-					map { defined $_ ? $_->Value : "" }
-					@{$sheet->{Cells}[$i]};
-			print "\n";
-		}
-	}
+    # Cheesy CSV printer...
+    for my $sheet (@{$book->{Worksheet}}) {
+            print STDERR "Worksheet: ", $sheet->{Name}, "\n";
+            for my $i ($sheet->{MinRow}..$sheet->{MaxRow}) {
+                    print join ',', map { qq|"$_"| }
+                                    map { defined $_ ? $_->Value : "" }
+                                    @{$sheet->{Cells}[$i]};
+                    print "\n";
+            }
+    }
 
-	# or...
+    # or...
 
-	use Spreadsheet::ParseExcel_XLHTML qw/-install/;
+    use Spreadsheet::ParseExcel_XLHTML qw/-install/;
 
-	# Calls to Spreadsheet::ParseExcel's constructor will now be forwarded
-	# to this module.
-	my $excel = new Spreadsheet::ParseExcel;
+    # then use the Spreadsheet::ParseExcel API
 
-	#...
+    my $book  = Spreadsheet::ParseExcel::Workbook->parse('/some/file.xls');
+    my $sheet = $book->{Worksheet}[0];
 
 =head1 DESCRIPTION
 
@@ -101,9 +100,9 @@ sub import {
 	if ($option eq 'install') {
 		no strict 'refs';
 
-# Perl will complain about mismatched prototypes...so turn off warnings, in a
-# compatible fashion.
-		local $^W = undef;
+# Perl will complain about mismatched prototypes and redefined subs, so turn
+# off warnings.
+		local $SIG{__WARN__} = sub {};
 
 # Trick Spreadsheet::ParseExcel into calling our constructor and blessing the
 # object into this package, also overwriteh the Parse method. Evil, I know :)
@@ -113,28 +112,28 @@ sub import {
 		};
 
 		*{'Spreadsheet::ParseExcel::Parse'} = \&Parse;
+
+		*{'Spreadsheet::ParseExcel::Workbook::Parse'} = sub {
+                    shift;
+                    __PACKAGE__->new->Parse(@_);
+                };
 	}
 }
 
-sub new ($;%) {
-	my ($class, %args) = @_;
-	$class		   = ref $class || $class;
-
-	my $self = bless { %args }, $class;
-
-	return $self;
+sub new {
+    my ($class, %args) = @_;
+    bless \%args, $class;
 }
 
-sub Parse ($$;$) {
+sub Parse {
 	my ($self, $file) = @_;
 
-	$file = $self->_getFileByObject($file);
+	my $work_book = Spreadsheet::ParseExcel::Workbook->new;
+        $file = $self->_getFileByObject($file);
+        $work_book->{File} = $file;
 
 	my $stream = new IO::File "xlhtml -xml $file |"
 		or die "Could not run xlhtml -xml $file: $!";
-
-	my $work_book = new Spreadsheet::ParseExcel::Workbook;
-	$work_book->{File} = $file;
 
 # Start parsing the stream, by hand. An XML parsing method here would be either
 # too slow or too complex.

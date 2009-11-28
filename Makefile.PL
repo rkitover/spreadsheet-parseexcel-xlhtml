@@ -3,10 +3,13 @@ use inc::Module::Install 0.91;
 name     'Spreadsheet-ParseExcel_XLHTML';
 all_from 'lib/Spreadsheet/ParseExcel_XLHTML.pm';
 
-requires 'Spreadsheet::ParseExcel';
+test_requires 'Test::More';
+test_requires 'Spreadsheet::WriteExcel';
 
-auto_provides;
-auto_install;
+requires 'Spreadsheet::ParseExcel';
+requires 'HTML::Entities';
+
+requires_external_bin 'xlhtml';
 
 resources repository =>
     'git://github.com/rkitover/spreadsheet-parseexcel-xlhtml.git';
@@ -17,4 +20,6 @@ if ($Module::Install::AUTHOR) {
 
 realclean_files 'README';
 
+auto_provides;
+auto_install;
 WriteAll;

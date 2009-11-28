@@ -1,5 +1,9 @@
 Revision history for Perl extension Spreadsheet::ParseExcel_XLHTML.
 
+0.04  2009-11-28 17:10:11
+    - added deps on HTML::Entities and xlhtml
+    - added basic tests
+
 0.03  2009-11-24 08:09:09
     - added POD fix from Frank Wiegand
     - updated homepage reference (project has been dead for a long time)
