@@ -60,11 +60,11 @@ Get the latest developer release. Once compiled, it needs to be in the PATH of
 your Perl program for this module to work correctly.
 
 You only need to use this module if you have a large volume of big Excel
-spreadsheets that you are parsing, or perhaps need to speed up a CGI/mod_perl
+spreadsheets that you are parsing, or perhaps need to speed up a web-based
 handler. Otherwise stick to the Spreadsheet::ParseExcel module.
 
-Now, someday we will have a nice C library with an XS interface, but this is
-not someday :)
+What is really needed is an XS interface to a C library for parsing Excel
+files.
 
 =head1 COMPATIBILITY
 
